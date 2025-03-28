@@ -10,25 +10,25 @@ using namespace std;
 
 const int WIDTH = 10;
 const int HEIGHT = 20;
-const int BASE_FALL_DELAY = 500;  // time before piece move down(milisecond)
+const int BASE_FALL_DELAY = 500;
 
 class Piece {
 public:
     int x, y;
-    vector<vector<char>> shape;  // 2D vector
+    vector<vector<char>> shape;
 
-    Piece(vector<vector<char>> shape) : shape(shape) {   // condition for shape top center
+    Piece(vector<vector<char>> shape) : shape(shape) {
         x = WIDTH / 2 - shape[0].size() / 2;
         y = 0;
     }
 
-    bool checkCollision(int newX, int newY, const vector<vector<char>>& board) const {// moving a Tetromino to a new position 
+    bool checkCollision(int newX, int newY, const vector<vector<char>>& board) const {
         for (size_t i = 0; i < shape.size(); i++) {
             for (size_t j = 0; j < shape[i].size(); j++) {
                 if (shape[i][j] != ' ') {
                     int boardX = newX + j;
                     int boardY = newY + i;
-                    if (boardX < 0 || boardX >= WIDTH || boardY >= HEIGHT ||  // collision detected
+                    if (boardX < 0 || boardX >= WIDTH || boardY >= HEIGHT || 
                         (boardY >= 0 && board[boardY][boardX] != ' ')) {
                         return true;
                     }
@@ -38,28 +38,26 @@ public:
         return false;
     }
 
-
-    // this is rotate like matrix 2* 3 or 3*2
     void rotate(const vector<vector<char>>& board) {
-        vector<vector<char>> rotated(shape[0].size(), vector<char>(shape.size(), ' '));   // 2d matrix rotete formula
+        vector<vector<char>> rotated(shape[0].size(), vector<char>(shape.size(), ' '));
 
         for (size_t i = 0; i < shape.size(); i++) {
             for (size_t j = 0; j < shape[i].size(); j++) {
-                rotated[j][shape.size() - 1 - i] = shape[i][j];   //  90-degree clockwise rotation formula 
+                rotated[j][shape.size() - 1 - i] = shape[i][j];
             }
         }
 
-        if (!checkCollision(x, y, board)) {  // if hit a wall and other spices no rotation
+        if (!checkCollision(x, y, board)) {
             shape = rotated;
-        }   
+        }
     }
 };
 
 class Game {
 private:
-    vector<vector<char>> board;  // game board 
-    vector<vector<vector<char>>> tetrominoes;  // store terminose shape
-    Piece* currentPiece;  // curruntly fall spice
+    vector<vector<char>> board;
+    vector<vector<vector<char>>> tetrominoes;
+    Piece* currentPiece;
     int score;
     int level;
     int linesCleared;
@@ -68,8 +66,8 @@ private:
     HANDLE consoleHandle;
 
 public:
-    Game(); // initilize game variable
-    ~Game();  // delete spices and free memory
+    Game();
+    ~Game();
     void drawBoard();
     void spawnPiece();
     void mergePiece();
@@ -79,10 +77,10 @@ public:
     void run();
 };
 
-Game::Game() : score(0), level(1), linesCleared(0), gameOver(false), paused(false), currentPiece(nullptr) {   // initilize game variable
+Game::Game() : score(0), level(1), linesCleared(0), gameOver(false), paused(false), currentPiece(nullptr) {
     consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    CONSOLE_CURSOR_INFO cursorInfo;    // Hides the console cursor
+    CONSOLE_CURSOR_INFO cursorInfo;
     GetConsoleCursorInfo(consoleHandle, &cursorInfo);
     cursorInfo.bVisible = false;
     SetConsoleCursorInfo(consoleHandle, &cursorInfo);
